@@ -3,66 +3,73 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>260419Test</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>자버</title>
+  <link rel="stylesheet" href="design-system.css" />
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .page {
+      max-width: 390px;
+      width: 100%;
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 0.25rem);
+      text-decoration: none;
+      transition: border-color 0.15s;
+    }
+
+    .nav-btn:hover { border-color: var(--primary); }
+
+    .nav-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+
+    .nav-chevron {
+      color: var(--muted-foreground);
+      display: flex;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <nav>
-      <div class="logo">260419Test</div>
-      <ul>
-        <li><a href="#home">홈</a></li>
-        <li><a href="#about">소개</a></li>
-        <li><a href="#contact">연락처</a></li>
-      </ul>
-    </nav>
-  </header>
-
-  <main>
-    <section id="home" class="hero">
-      <div class="hero-content">
-        <h1>환영합니다</h1>
-        <p>260419Test 프로젝트에 오신 걸 환영합니다.</p>
-        <button class="cta-btn" onclick="showAlert()">시작하기</button>
-      </div>
-    </section>
-
-    <section id="about" class="about">
-      <h2>소개</h2>
-      <div class="cards">
-        <div class="card">
-          <span class="icon">🚀</span>
-          <h3>빠름</h3>
-          <p>최적화된 성능으로 빠르게 동작합니다.</p>
-        </div>
-        <div class="card">
-          <span class="icon">🎨</span>
-          <h3>디자인</h3>
-          <p>깔끔하고 현대적인 UI를 제공합니다.</p>
-        </div>
-        <div class="card">
-          <span class="icon">📱</span>
-          <h3>반응형</h3>
-          <p>모바일, 태블릿, 데스크탑 모두 지원합니다.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="contact" class="contact">
-      <h2>연락처</h2>
-      <form onsubmit="handleSubmit(event)">
-        <input type="text" placeholder="이름" required />
-        <input type="email" placeholder="이메일" required />
-        <textarea placeholder="메시지를 입력하세요..." rows="5" required></textarea>
-        <button type="submit">보내기</button>
-      </form>
-    </section>
-  </main>
-
-  <footer>
-    <p>&copy; 2026 260419Test. All rights reserved.</p>
-  </footer>
-
-  <script src="script.js"></script>
+  <div class="page">
+    <a href="stats.html" class="nav-btn">
+      <span class="nav-label">통계</span>
+      <span class="nav-chevron">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </span>
+    </a>
+    <a href="materials.html" class="nav-btn">
+      <span class="nav-label">아바타 관리</span>
+      <span class="nav-chevron">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </span>
+    </a>
+  </div>
 </body>
 </html>
