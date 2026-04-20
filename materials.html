@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>자버 김윤정 매니저 — 자료</title>
+  <link rel="stylesheet" href="design-system.css" />
+  <style>
+    body {
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    .page {
+      max-width: 390px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── Header (same as stats) ── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 48px 0 20px;
+      gap: 12px;
+    }
+
+    .header-left h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--foreground);
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .header-left p {
+      font-size: 14px;
+      color: var(--muted-foreground);
+    }
+
+    .btn-settings {
+      flex-shrink: 0;
+      padding: 10px 18px;
+      background: var(--secondary);
+      color: var(--foreground);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .tab {
+      padding: 10px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      background: none;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.15s;
+    }
+
+    .tab.active {
+      color: var(--foreground);
+    }
+
+    .tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--foreground);
+      border-radius: 2px 2px 0 0;
+    }
+
+    /*.tab:first-child { padding-left: 0; }*/
+
+    /* ── Tab subtitle ── */
+    .tab-subtitle {
+      font-size: 13px;
+      color: var(--muted-foreground);
+      margin-bottom: 20px;
+    }
+
+    /* ── Section header ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--foreground);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-count {
+      color: var(--primary);
+    }
+
+    .btn-more {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+
+    .btn-more:hover {
+      color: var(--foreground);
+    }
+
+    /* ── Add button ── */
+    .btn-add {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px;
+      background: var(--primary);
+      color: var(--background);
+      border: none;
+      border-radius: calc(var(--radius) + 0.25rem);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: opacity 0.15s;
+      font-family: inherit;
+    }
+
+    .btn-add:hover {
+      opacity: 0.88;
+    }
+
+    .btn-add-mini {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      background: var(--primary);
+      color: var(--background);
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .btn-add-mini:hover {
+      opacity: 0.88;
+    }
+
+    /* 기존 .btn-add 스타일은 HTML에서 삭제했으므로 더 이상 화면에 나타나지 않습니다. */
+
+    /* ── Material list card ── */
+    .material-list {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 0.25rem);
+      overflow: hidden;
+    }
+
+    .material-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+
+    .material-item:last-child {
+      border-bottom: none;
+    }
+
+    .material-item:hover {
+      background: var(--accent);
+    }
+
+    .material-icon {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .material-name {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-width: 0;
+    }
+
+    .badge-fail {
+      flex-shrink: 0;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: oklch(65% .22 25);
+      color: #fff;
+    }
+
+    .badge-progress {
+      flex-shrink: 0;
+      padding: 3px 9px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      background: var(--secondary);
+      color: var(--muted-foreground);
+      border: 1px solid var(--border);
+    }
+
+    .btn-delete {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      display: flex;
+      align-items: center;
+      padding: 4px;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+
+    .btn-delete:hover {
+      color: oklch(65% .22 25);
+    }
+
+    /* ── Tab panels ── */
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    /* ── Identity tab ── */
+    .identity-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 0.25rem);
+      padding: 20px 16px;
+      margin-bottom: 12px;
+    }
+
+    .identity-section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--foreground);
+      margin-bottom: 4px;
+    }
+
+    .identity-section-desc {
+      font-size: 13px;
+      color: var(--muted-foreground);
+      margin-bottom: 14px;
+    }
+
+    .identity-textarea {
+      width: 100%;
+      box-sizing: border-box;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--muted-foreground);
+      font-size: 13px;
+      font-family: inherit;
+      line-height: 1.6;
+      padding: 12px 14px;
+      resize: none;
+      outline: none;
+      min-height: 90px;
+    }
+
+    .identity-textarea:focus {
+      border-color: var(--primary);
+      color: var(--foreground);
+    }
+
+    .rule-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .rule-item {
+      display: flex;
+      align-items: center;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .rule-input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--foreground);
+      font-family: inherit;
+      padding: 13px 14px;
+    }
+
+    .rule-input::placeholder {
+      color: var(--muted-foreground);
+    }
+
+    .rule-delete {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      padding: 13px 12px;
+      display: flex;
+      align-items: center;
+      transition: color 0.15s;
+    }
+
+    .rule-delete:hover {
+      color: oklch(65% .22 25);
+    }
+
+    .btn-add-rule {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      box-sizing: border-box;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 13px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      font-family: inherit;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .btn-add-rule:hover {
+      color: var(--foreground);
+      border-color: var(--primary);
+    }
+
+    /* ── Chat tab ── */
+    .chat-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 0.25rem);
+      padding: 20px 16px;
+      margin-bottom: 12px;
+    }
+
+    .chat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+
+    .chat-nav-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      transition: color 0.15s;
+    }
+
+    .chat-nav-value:hover {
+      color: var(--foreground);
+    }
+
+    .chat-section-desc {
+      font-size: 13px;
+      color: var(--muted-foreground);
+      margin: 4px 0 14px;
+    }
+
+    .chat-textarea {
+      width: 100%;
+      box-sizing: border-box;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--foreground);
+      font-size: 14px;
+      font-family: inherit;
+      line-height: 1.6;
+      padding: 12px 14px;
+      resize: none;
+      outline: none;
+      min-height: 100px;
+    }
+
+    .chat-textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-add-small {
+      padding: 7px 16px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--secondary);
+      color: var(--foreground);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      transition: border-color 0.15s;
+    }
+
+    .btn-add-small:hover {
+      border-color: var(--primary);
+    }
+
+    .question-list {
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .question-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .question-item:last-child {
+      border-bottom: none;
+    }
+
+    .drag-handle {
+      color: var(--muted-foreground);
+      flex-shrink: 0;
+      cursor: grab;
+      display: flex;
+    }
+
+    .question-text {
+      flex: 1;
+      font-size: 13px;
+      color: var(--foreground);
+      line-height: 1.4;
+      min-width: 0;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .question-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .q-icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      display: flex;
+      padding: 2px;
+      transition: color 0.15s;
+    }
+
+    .q-icon-btn:hover {
+      color: var(--foreground);
+    }
+
+    .q-icon-btn.del:hover {
+      color: oklch(65% .22 25);
+    }
+
+    /* toggle switch */
+    .toggle-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .toggle-label {
+      flex: 1;
+    }
+
+    .toggle-label-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 3px;
+    }
+
+    .toggle-label-desc {
+      font-size: 12px;
+      color: var(--muted-foreground);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 26px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle-switch input:checked+.toggle-track {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 3px;
+      top: 3px;
+      background: var(--muted-foreground);
+      border-radius: 9999px;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .toggle-switch input:checked+.toggle-track::after {
+      transform: translateX(18px);
+      background: var(--background);
+    }
+
+    /* cost buttons */
+    .cost-btns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .cost-btn {
+      padding: 14px;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      transition: opacity 0.15s;
+    }
+
+    .cost-btn.active {
+      background: var(--primary);
+      color: var(--background);
+      border-color: var(--primary);
+    }
+
+    .cost-btn.inactive {
+      background: var(--secondary);
+      color: var(--muted-foreground);
+    }
+
+    .cost-btn:hover {
+      opacity: 0.85;
+    }
+
+    /* ── Tone modal ── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .overlay.open {
+      display: flex;
+    }
+
+    .tone-sheet {
+      width: 100%;
+      max-width: 390px;
+      background: var(--card);
+      border-radius: 20px 20px 0 0;
+      padding: 24px 20px 40px;
+    }
+
+    .tone-sheet-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--foreground);
+      margin-bottom: 16px;
+    }
+
+    .tone-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+
+    .tone-option:hover {
+      background: var(--accent);
+    }
+
+    .tone-option.selected {
+      background: color-mix(in oklch, var(--primary) 12%, transparent);
+    }
+
+    .tone-option-left {
+      flex: 1;
+    }
+
+    .tone-option-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 2px;
+    }
+
+    .tone-option-desc {
+      font-size: 12px;
+      color: var(--muted-foreground);
+    }
+
+    .tone-check {
+      width: 20px;
+      height: 20px;
+      border-radius: 9999px;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .tone-option.selected .tone-check {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <h1>
+          <button onclick="history.back()"
+            style="background:none;border:none;cursor:pointer;padding:0;margin-right:6px;vertical-align:middle;line-height:1">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round"
+              style="color:var(--foreground);display:inline-block;vertical-align:middle">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <span style="vertical-align:middle">자버 김윤정 매니저</span>
+        </h1>
+        <p>아바타 자료와 설정을 관리하세요</p>
+      </div>
+      <button class="btn-settings">고급 설정</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('materials', this)">자료</button>
+      <button class="tab" onclick="switchTab('identity', this)">정체성</button>
+      <button class="tab" onclick="switchTab('chat', this)">대화</button>
+    </div>
+
+    <!-- Tab: 자료 -->
+    <div class="tab-panel active" id="panel-materials">
+      <p class="tab-subtitle">아바타가 학습할 자료를 업로드해요</p>
+
+      <div class="section-header">
+        <div class="section-title">
+          자료 <span class="section-count" id="materialCount">4</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="btn-add-mini" onclick="document.getElementById('fileInput').click()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            추가
+          </button>
+
+          <button class="btn-more">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="5" r="1" />
+              <circle cx="12" cy="12" r="1" />
+              <circle cx="12" cy="19" r="1" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <input type="file" id="fileInput" style="display:none" multiple onchange="handleFileAdd(this)" />
+      <div class="material-list" id="materialList"></div>
+    </div>
+
+    <!-- Tab: 정체성 -->
+    <div class="tab-panel" id="panel-identity">
+      <p class="tab-subtitle">아바타가 어떤 사람인지 설정하세요</p>
+
+      <!-- 한 줄 소개 -->
+      <div class="identity-section">
+        <div class="identity-section-title">한 줄 소개</div>
+        <div class="identity-section-desc">어떤 아바타로서 대화할지 간단히 소개해주세요</div>
+        <textarea class="identity-textarea"
+          placeholder="예) 자버 서비스 운영매니저&#10;예) 30년간 초등학교 교사로 일하며 교육 철학을 전달한 사람"></textarea>
+      </div>
+
+      <!-- 규칙 -->
+      <div class="identity-section">
+        <div class="identity-section-title">규칙</div>
+        <div class="identity-section-desc">아바타가 대화할 때 지켜야 할 사항을 등록해요</div>
+        <div class="rule-list" id="ruleList"></div>
+        <div style="margin-top:8px">
+          <button class="btn-add-rule" onclick="addRule()">
+            규칙 추가
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 답변하지 않을 주제 -->
+      <div class="identity-section">
+        <div class="identity-section-title">답변하지 않을 주제</div>
+        <div class="identity-section-desc">입력한 주제에 대해서는 답변을 거부해요</div>
+        <div class="rule-list" id="topicList"></div>
+        <div style="margin-top:8px">
+          <button class="btn-add-rule" onclick="addTopic()">
+            주제 추가
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab: 대화 -->
+    <div class="tab-panel" id="panel-chat">
+      <p class="tab-subtitle">아바타가 어떻게 대화할지 설정하세요</p>
+
+      <!-- 대화 톤 -->
+      <div class="chat-section">
+        <div class="chat-row">
+          <span class="chat-section-title">대화 톤</span>
+          <button class="chat-nav-value" onclick="openToneModal()">
+            <span id="toneLabel">친근한</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 첫 메시지 -->
+      <div class="chat-section">
+        <div class="chat-section-title">첫 메시지</div>
+        <div class="chat-section-desc">대화를 시작하면 아바타가 먼저 말을 걸어요</div>
+        <textarea class="chat-textarea">안녕하세요! 자버 김윤정 매니저입니다.</textarea>
+      </div>
+
+      <!-- 추천 질문 -->
+      <div class="chat-section">
+        <div class="chat-row" style="margin-bottom:14px">
+          <span class="chat-section-title">추천 질문</span>
+          <button class="btn-add-small" onclick="addQuestion()">추가</button>
+        </div>
+        <div class="question-list" id="questionList"></div>
+        <div class="toggle-row">
+          <div class="toggle-label">
+            <div class="toggle-label-title">새로운 추천질문 자동 생성</div>
+            <div class="toggle-label-desc">남은 질문이 없는 경우 새롭게 생성합니다.</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" checked />
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 비용 -->
+      <div class="chat-section">
+        <div class="chat-section-title">비용</div>
+        <div class="chat-section-desc" style="margin-bottom:0">메시지 1개당 50 크레딧이 사용됩니다.</div>
+        <div class="cost-btns">
+          <button class="cost-btn active" id="costUser" onclick="setCost('user')">사용자가 내요</button>
+          <button class="cost-btn inactive" id="costMe" onclick="setCost('me')">제가 내요</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Tone modal -->
+  <div class="overlay" id="toneOverlay" onclick="closeToneModal(event)">
+    <div class="tone-sheet" onclick="event.stopPropagation()">
+      <div class="tone-sheet-title">대화 톤 선택</div>
+      <div id="toneOptions"></div>
+    </div>
+  </div>
+
+  <script>
+    const iconMap = {
+      audio: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>`,
+      pdf: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>`,
+      text: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>`,
+      video: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>`,
+      cam: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
+      web: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`,
+    };
+
+    const trashIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+
+    let materials = [
+      { id: 0, name: '자료 이름입니다 자료 이름이 길어집니다', type: 'audio', badge: null },
+      { id: 1, name: '자료 이름입니다 자료 이름이...', type: 'pdf', badge: 'fail' },
+      { id: 2, name: '자료 이름입니다 자료 이름이...', type: 'text', badge: '18%' },
+      { id: 3, name: '자료 이름입니다 자료 이름이 길어집니다', type: 'video', badge: null },
+      { id: 4, name: '자료 이름입니다 자료 이름이 길어집니다', type: 'cam', badge: null },
+      { id: 5, name: '자료 이름입니다 자료 이름이 길어집니다', type: 'web', badge: null },
+    ];
+
+    let nextId = 6;
+
+    function renderMaterials() {
+      const list = document.getElementById('materialList');
+      document.getElementById('materialCount').textContent = materials.length;
+      list.innerHTML = materials.map(m => {
+        const badge = m.badge === 'fail'
+          ? `<span class="badge-fail">fail</span>`
+          : m.badge
+            ? `<span class="badge-progress">${m.badge}</span>`
+            : '';
+        return `
+      <div class="material-item" id="mat-${m.id}">
+        <span class="material-icon">${iconMap[m.type] || iconMap.text}</span>
+        <span class="material-name">${m.name}</span>
+        ${badge}
+        <button class="btn-delete" onclick="deleteMaterial(${m.id})">${trashIcon}</button>
+      </div>`;
+      }).join('');
+    }
+
+    function deleteMaterial(id) {
+      materials = materials.filter(m => m.id !== id);
+      renderMaterials();
+    }
+
+    function handleFileAdd(input) {
+      Array.from(input.files).forEach(f => {
+        const ext = f.name.split('.').pop().toLowerCase();
+        const type = ['mp3', 'wav', 'm4a'].includes(ext) ? 'audio'
+          : ext === 'pdf' ? 'pdf'
+            : ['mp4', 'mov'].includes(ext) ? 'video'
+              : ['txt', 'md', 'docx'].includes(ext) ? 'text'
+                : 'web';
+        materials.push({ id: nextId++, name: f.name, type, badge: null });
+      });
+      renderMaterials();
+      input.value = '';
+    }
+
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + tab).classList.add('active');
+    }
+
+    renderMaterials();
+
+    /* ── Identity tab ── */
+    let rules = ['최대한 솔직하게 숨김없이 말하기', '반말을 사용해서 대화하기'];
+    let topics = ['정치 성향', '종교'];
+
+    const smallTrash = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
+
+    function renderRules() {
+      document.getElementById('ruleList').innerHTML = rules.map((r, i) => `
+      <div class="rule-item">
+        <input class="rule-input" value="${i + 1}. ${r}"
+          onchange="rules[${i}] = this.value.replace(/^\\d+\\.\\s*/, '')" />
+        <button class="rule-delete" onclick="rules.splice(${i},1);renderRules()">${smallTrash}</button>
+      </div>`).join('');
+    }
+
+    function renderTopics() {
+      document.getElementById('topicList').innerHTML = topics.map((t, i) => `
+      <div class="rule-item">
+        <input class="rule-input" value="${i + 1}. ${t}"
+          onchange="topics[${i}] = this.value.replace(/^\\d+\\.\\s*/, '')" />
+        <button class="rule-delete" onclick="topics.splice(${i},1);renderTopics()">${smallTrash}</button>
+      </div>`).join('');
+    }
+
+    function addRule() {
+      rules.push('');
+      renderRules();
+      const inputs = document.querySelectorAll('#ruleList .rule-input');
+      inputs[inputs.length - 1].focus();
+    }
+
+    function addTopic() {
+      topics.push('');
+      renderTopics();
+      const inputs = document.querySelectorAll('#topicList .rule-input');
+      inputs[inputs.length - 1].focus();
+    }
+
+    renderRules();
+    renderTopics();
+
+    /* ── Chat tab ── */
+    const tones = [
+      { name: '친근한', desc: '따뜻하고 편안한 말투로 대화해요' },
+      { name: '정중한', desc: '예의 바르고 격식을 갖춘 말투로 대화해요' },
+      { name: '전문적인', desc: '신뢰감 있는 전문가 말투로 대화해요' },
+      { name: '캐주얼', desc: '가볍고 자유로운 말투로 대화해요' },
+    ];
+    let toneIdx = 0;
+
+    function renderToneOptions() {
+      document.getElementById('toneOptions').innerHTML = tones.map((t, i) => `
+      <div class="tone-option ${i === toneIdx ? 'selected' : ''}" onclick="selectTone(${i})">
+        <div class="tone-option-left">
+          <div class="tone-option-name">${t.name}</div>
+          <div class="tone-option-desc">${t.desc}</div>
+        </div>
+        <div class="tone-check">
+          ${i === toneIdx ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--background)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
+        </div>
+      </div>`).join('');
+    }
+
+    function selectTone(i) {
+      toneIdx = i;
+      document.getElementById('toneLabel').textContent = tones[i].name;
+      renderToneOptions();
+      setTimeout(closeToneModal, 180);
+    }
+
+    function openToneModal() {
+      renderToneOptions();
+      document.getElementById('toneOverlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeToneModal(e) {
+      if (!e || e.target === document.getElementById('toneOverlay')) {
+        document.getElementById('toneOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+      }
+    }
+
+    let questions = [
+      '자버는 무엇을 만드는 회사인가요?',
+      '자버는 무엇을 만드는 회사인가요? 자버는 무엇을 만드는 회사인가...',
+    ];
+    let qNextId = 0;
+
+    const editIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+    const dragIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.5"/><circle cx="15" cy="5" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="19" r="1.5"/><circle cx="15" cy="19" r="1.5"/></svg>`;
+
+    function renderQuestions() {
+      const el = document.getElementById('questionList');
+      el.innerHTML = questions.map((q, i) => `
+      <div class="question-item">
+        <span class="drag-handle">${dragIcon}</span>
+        <span class="question-text">${q}</span>
+        <div class="question-actions">
+          <button class="q-icon-btn" onclick="editQuestion(${i})">${editIcon}</button>
+          <button class="q-icon-btn del" onclick="questions.splice(${i},1);renderQuestions()">${smallTrash}</button>
+        </div>
+      </div>`).join('');
+    }
+
+    function addQuestion() {
+      const text = prompt('추천 질문을 입력하세요');
+      if (text && text.trim()) {
+        questions.push(text.trim());
+        renderQuestions();
+      }
+    }
+
+    function editQuestion(i) {
+      const text = prompt('질문 수정', questions[i]);
+      if (text !== null && text.trim()) {
+        questions[i] = text.trim();
+        renderQuestions();
+      }
+    }
+
+    function setCost(who) {
+      document.getElementById('costUser').className = 'cost-btn ' + (who === 'user' ? 'active' : 'inactive');
+      document.getElementById('costMe').className = 'cost-btn ' + (who === 'me' ? 'active' : 'inactive');
+    }
+
+    renderQuestions();
+  </script>
+</body>
+
+</html>

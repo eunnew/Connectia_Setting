@@ -1,0 +1,76 @@
+/*
+ * Design System — extracted from connectia.bio/home
+ * Source: design-tokens.json
+ */
+
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable.css');
+
+:root {
+  /* Layout */
+  --radius: .625rem;
+
+  /* Background / Surface */
+  --background:           oklch(10% .015 280);
+  --foreground:           oklch(95% .005 265);
+
+  --card:                 oklch(17% .015 275);
+  --card-foreground:      oklch(95% .005 265);
+
+  --popover:              oklch(17% .015 275);
+  --popover-foreground:   oklch(95% .005 265);
+
+  /* Brand */
+  --primary:              oklch(80% .1 290);
+  --primary-foreground:   oklch(13% .02 280);
+
+  --secondary:            oklch(20% .015 275);
+  --secondary-foreground: oklch(90% .005 265);
+
+  /* Neutral */
+  --muted:                oklch(20% .015 275);
+  --muted-foreground:     oklch(60% .015 280);
+
+  --accent:               oklch(22% .02 280);
+  --accent-foreground:    oklch(95% .005 265);
+
+  /* State */
+  --destructive:          oklch(65% .22 25);
+
+  /* Stroke / Input */
+  --border:               oklch(100% 0 0/.08);
+  --input:                oklch(100% 0 0/.12);
+  --ring:                 oklch(80% .1 290);
+
+  /* Charts */
+  --chart-1:              oklch(75% .15 290);
+  --chart-2:              oklch(70% .12 200);
+  --chart-3:              oklch(65% .18 60);
+  --chart-4:              oklch(72% .14 330);
+  --chart-5:              oklch(68% .16 160);
+
+  /* Sidebar */
+  --sidebar:                      oklch(12% .015 280);
+  --sidebar-foreground:           oklch(95% .005 265);
+  --sidebar-primary:              oklch(80% .1 290);
+  --sidebar-primary-foreground:   oklch(13% .02 280);
+  --sidebar-accent:               oklch(20% .015 275);
+  --sidebar-accent-foreground:    oklch(95% .005 265);
+  --sidebar-border:               oklch(100% 0 0/.08);
+  --sidebar-ring:                 oklch(80% .1 290);
+}
+
+/* ── Base resets ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 { font-weight: 700; color: var(--foreground); }
+a { color: var(--primary); }
+p { color: var(--muted-foreground); }

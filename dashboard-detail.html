@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>대시보드 상세</title>
+  <link rel="stylesheet" href="design-system.css" />
+  <style>
+    body { min-height: 100vh; padding-bottom: 60px; }
+
+    .page {
+      max-width: 390px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 48px 0 20px;
+    }
+
+    .btn-back {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      color: var(--foreground);
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--foreground);
+      letter-spacing: -0.02em;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+      gap: 0;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 12px 0;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* ── Section card ── */
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 0.25rem);
+      padding: 20px;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .section-summary {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--foreground);
+      line-height: 1.4;
+      margin-bottom: 4px;
+    }
+
+    .section-desc {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--muted-foreground);
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+
+    /* ── Heatmap ── */
+    .heatmap-wrap {
+      overflow-x: auto;
+    }
+
+    .heatmap {
+      display: grid;
+      grid-template-columns: 32px repeat(24, 1fr);
+      grid-template-rows: 20px repeat(7, 1fr);
+      gap: 3px;
+      min-width: 340px;
+    }
+
+    .hm-label {
+      font-size: 10px;
+      color: var(--muted-foreground);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hm-hour {
+      font-size: 9px;
+      color: var(--muted-foreground);
+      text-align: center;
+    }
+
+    .hm-cell {
+      height: 18px;
+      border-radius: 3px;
+      background: var(--accent);
+    }
+
+    .hm-cell[data-level="0"] { opacity: 0.1; }
+    .hm-cell[data-level="1"] { background: var(--primary); opacity: 0.25; }
+    .hm-cell[data-level="2"] { background: var(--primary); opacity: 0.45; }
+    .hm-cell[data-level="3"] { background: var(--primary); opacity: 0.65; }
+    .hm-cell[data-level="4"] { background: var(--primary); opacity: 0.85; }
+    .hm-cell[data-level="5"] { background: var(--primary); opacity: 1; }
+
+    .heatmap-legend {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 10px;
+      justify-content: flex-end;
+    }
+
+    .legend-label { font-size: 10px; color: var(--muted-foreground); }
+
+    .legend-cell {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      background: var(--primary);
+    }
+
+    /* ── Donut chart ── */
+    .donut-wrap {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .donut-svg { flex-shrink: 0; }
+
+    .donut-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 9999px;
+      flex-shrink: 0;
+    }
+
+    .legend-item-text { flex: 1; }
+
+    .legend-item-label {
+      font-size: 13px;
+      color: var(--foreground);
+    }
+
+    .legend-item-val {
+      font-size: 12px;
+      color: var(--muted-foreground);
+    }
+
+    /* ── Category bar ── */
+    .cat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .cat-item {}
+
+    .cat-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .cat-name {
+      font-size: 13px;
+      color: var(--foreground);
+    }
+
+    .cat-val {
+      font-size: 13px;
+      color: var(--muted-foreground);
+    }
+
+    .cat-track {
+      background: var(--accent);
+      border-radius: 9999px;
+      height: 7px;
+      overflow: hidden;
+    }
+
+    .cat-fill {
+      height: 100%;
+      border-radius: 9999px;
+      background: var(--primary);
+      transition: width 0.8s ease;
+    }
+
+    .cat-fill.c2 { background: oklch(70% .12 200); }
+    .cat-fill.c3 { background: oklch(65% .18 60); }
+    .cat-fill.c4 { background: oklch(72% .14 330); }
+
+    /* ── Sentiment ── */
+    .sentiment-bar-wrap {
+      margin-bottom: 14px;
+    }
+
+    .sentiment-track {
+      display: flex;
+      height: 14px;
+      border-radius: 9999px;
+      overflow: hidden;
+      gap: 2px;
+    }
+
+    .seg {
+      height: 100%;
+      transition: width 0.8s ease;
+    }
+
+    .seg.positive  { background: #4ade80; border-radius: 9999px 0 0 9999px; }
+    .seg.neutral   { background: oklch(65% .18 60); }
+    .seg.negative  { background: oklch(65% .22 25); border-radius: 0 9999px 9999px 0; }
+
+    .sentiment-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .sentiment-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .s-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+    }
+
+    .s-label { font-size: 12px; color: var(--muted-foreground); }
+    .s-val   { font-size: 13px; font-weight: 600; color: var(--foreground); }
+
+    /* tab panels */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- Header -->
+    <div class="header">
+      <button class="btn-back" onclick="history.back()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <h1>대시보드</h1>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('chat', this)">채팅</button>
+      <button class="tab" onclick="switchTab('profile', this)">프로필</button>
+    </div>
+
+    <!-- 채팅 탭 -->
+    <div class="tab-panel active" id="panel-chat">
+
+      <!-- 1. 시간대별 트래픽 히트맵 -->
+      <div class="section">
+        <div class="section-title">시간대별 트래픽 히트맵</div>
+        <div class="section-summary">오후 7–10시에 트래픽이 집중됩니다.</div>
+        <div class="section-desc">해당 시간대에 자동 응대 우선순위를 높이거나 알림을 설정해보세요.</div>
+        <div class="heatmap-wrap">
+          <div class="heatmap" id="heatmap"></div>
+          <div class="heatmap-legend">
+            <span class="legend-label">적음</span>
+            <div class="legend-cell" style="opacity:.15"></div>
+            <div class="legend-cell" style="opacity:.35"></div>
+            <div class="legend-cell" style="opacity:.55"></div>
+            <div class="legend-cell" style="opacity:.75"></div>
+            <div class="legend-cell" style="opacity:1"></div>
+            <span class="legend-label">많음</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. 대화 카테고리 분류별 분포 -->
+      <div class="section">
+        <div class="section-title">대화 카테고리 분포</div>
+        <div class="section-summary">요금·결제 문의가 전체의 38%로 가장 많아요.</div>
+        <div class="section-desc">요금 관련 FAQ를 보강하면 자동 해결률을 높일 수 있어요.</div>
+        <div class="cat-list">
+          <div class="cat-item">
+            <div class="cat-row">
+              <span class="cat-name">요금 / 결제</span>
+              <span class="cat-val">38% · 14건</span>
+            </div>
+            <div class="cat-track"><div class="cat-fill" style="width:38%"></div></div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-row">
+              <span class="cat-name">사용 방법</span>
+              <span class="cat-val">26% · 10건</span>
+            </div>
+            <div class="cat-track"><div class="cat-fill c2" style="width:26%"></div></div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-row">
+              <span class="cat-name">계정 / 회원</span>
+              <span class="cat-val">21% · 8건</span>
+            </div>
+            <div class="cat-track"><div class="cat-fill c3" style="width:21%"></div></div>
+          </div>
+          <div class="cat-item">
+            <div class="cat-row">
+              <span class="cat-name">기타</span>
+              <span class="cat-val">15% · 6건</span>
+            </div>
+            <div class="cat-track"><div class="cat-fill c4" style="width:15%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. 감정 분석 -->
+      <div class="section">
+        <div class="section-title">감정 분석</div>
+        <div class="section-summary">긍정 반응이 61%로 전반적으로 호의적이에요.</div>
+        <div class="section-desc">부정 반응 13%는 주로 응답 지연과 요금 불만에서 발생했어요.</div>
+        <div class="sentiment-bar-wrap">
+          <div class="sentiment-track">
+            <div class="seg positive" style="width:61%"></div>
+            <div class="seg neutral"  style="width:26%"></div>
+            <div class="seg negative" style="width:13%"></div>
+          </div>
+          <div class="sentiment-labels">
+            <div class="sentiment-item">
+              <div class="s-dot" style="background:#4ade80"></div>
+              <span class="s-label">긍정</span>
+              <span class="s-val">61%</span>
+            </div>
+            <div class="sentiment-item">
+              <div class="s-dot" style="background:oklch(65% .18 60)"></div>
+              <span class="s-label">중립</span>
+              <span class="s-val">26%</span>
+            </div>
+            <div class="sentiment-item">
+              <div class="s-dot" style="background:oklch(65% .22 25)"></div>
+              <span class="s-label">부정</span>
+              <span class="s-val">13%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /panel-chat -->
+
+    <!-- 프로필 탭 -->
+    <div class="tab-panel" id="panel-profile">
+
+      <!-- 방문자수 추이 꺾은선 그래프 -->
+      <div class="section">
+        <div class="section-title">방문자수 추이</div>
+        <div class="section-summary">주중 방문자는 꾸준히 증가하고 있어요.</div>
+        <div class="section-desc">지난 7일 대비 총 방문자가 22% 늘었어요.</div>
+        <canvas id="lineChart" height="160" style="width:100%;display:block"></canvas>
+        <div style="display:flex;justify-content:space-between;margin-top:8px">
+          <span style="font-size:11px;color:var(--muted-foreground)">4/13</span>
+          <span style="font-size:11px;color:var(--muted-foreground)">4/14</span>
+          <span style="font-size:11px;color:var(--muted-foreground)">4/15</span>
+          <span style="font-size:11px;color:var(--muted-foreground)">4/16</span>
+          <span style="font-size:11px;color:var(--muted-foreground)">4/17</span>
+          <span style="font-size:11px;color:var(--muted-foreground)">4/18</span>
+          <span style="font-size:11px;color:var(--muted-foreground)">4/19</span>
+        </div>
+      </div>
+
+      <!-- 신규 vs 재방문 비율 -->
+      <div class="section">
+        <div class="section-title">신규 vs 재방문 비율</div>
+        <div class="section-summary">신규 방문자가 68%로 절반 이상이에요.</div>
+        <div class="section-desc">첫 방문자를 위한 안내 흐름을 강화하면 전환율을 높일 수 있어요.</div>
+        <div class="donut-wrap">
+          <svg class="donut-svg" width="110" height="110" viewBox="0 0 110 110">
+            <circle cx="55" cy="55" r="40" fill="none" stroke="var(--accent)" stroke-width="18"/>
+            <circle cx="55" cy="55" r="40" fill="none"
+              stroke="oklch(80% .1 290)" stroke-width="18"
+              stroke-dasharray="171.2 80.8" stroke-dashoffset="62.8"
+              stroke-linecap="butt" transform="rotate(-90 55 55)"/>
+            <circle cx="55" cy="55" r="40" fill="none"
+              stroke="oklch(70% .12 200)" stroke-width="18"
+              stroke-dasharray="80.8 171.2" stroke-dashoffset="-108.4"
+              stroke-linecap="butt" transform="rotate(-90 55 55)"/>
+            <text x="55" y="51" text-anchor="middle" font-size="14" font-weight="700" fill="oklch(95% .005 265)">68%</text>
+            <text x="55" y="64" text-anchor="middle" font-size="10" fill="oklch(60% .015 280)">신규</text>
+          </svg>
+          <div class="donut-legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background:oklch(80% .1 290)"></div>
+              <div class="legend-item-text">
+                <div class="legend-item-label">신규 방문자</div>
+                <div class="legend-item-val">68% · 26명</div>
+              </div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background:oklch(70% .12 200)"></div>
+              <div class="legend-item-text">
+                <div class="legend-item-label">재방문자</div>
+                <div class="legend-item-val">32% · 12명</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    /* ── Tab switch ── */
+    function switchTab(id, btn) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + id).classList.add('active');
+    }
+
+    /* ── Line chart ── */
+    function drawLineChart() {
+      const canvas = document.getElementById('lineChart');
+      if (!canvas) return;
+      const dpr = window.devicePixelRatio || 1;
+      const W = canvas.offsetWidth;
+      const H = 160;
+      canvas.width  = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width  = W + 'px';
+      canvas.style.height = H + 'px';
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      const data = [12, 19, 15, 28, 24, 33, 38];
+      const pad  = { top: 16, right: 8, bottom: 8, left: 32 };
+      const cW   = W - pad.left - pad.right;
+      const cH   = H - pad.top  - pad.bottom;
+      const max  = Math.max(...data);
+      const min  = 0;
+
+      const px = (i) => pad.left + (i / (data.length - 1)) * cW;
+      const py = (v) => pad.top  + (1 - (v - min) / (max - min)) * cH;
+
+      /* grid lines */
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+      [0, 0.25, 0.5, 0.75, 1].forEach(t => {
+        const y = pad.top + t * cH;
+        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+        const val = Math.round(max * (1 - t));
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.font = `10px Pretendard, sans-serif`;
+        ctx.textAlign = 'right';
+        ctx.fillText(val, pad.left - 4, y + 4);
+      });
+
+      /* gradient fill */
+      const grad = ctx.createLinearGradient(0, pad.top, 0, H);
+      grad.addColorStop(0, 'rgba(107,107,225,0.35)');
+      grad.addColorStop(1, 'rgba(107,107,225,0)');
+      ctx.beginPath();
+      ctx.moveTo(px(0), py(data[0]));
+      data.forEach((v, i) => { if (i > 0) ctx.lineTo(px(i), py(v)); });
+      ctx.lineTo(px(data.length - 1), H - pad.bottom);
+      ctx.lineTo(px(0), H - pad.bottom);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      /* line */
+      ctx.beginPath();
+      ctx.moveTo(px(0), py(data[0]));
+      data.forEach((v, i) => { if (i > 0) ctx.lineTo(px(i), py(v)); });
+      ctx.strokeStyle = 'oklch(80% .1 290)';
+      ctx.lineWidth = 2;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+
+      /* dots */
+      data.forEach((v, i) => {
+        ctx.beginPath();
+        ctx.arc(px(i), py(v), 4, 0, Math.PI * 2);
+        ctx.fillStyle = 'oklch(80% .1 290)';
+        ctx.fill();
+        ctx.strokeStyle = 'oklch(10% .015 280)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      });
+    }
+
+    /* draw after tab switch or on load */
+    const _origSwitch = window.switchTab;
+    window.switchTab = function(id, btn) {
+      _origSwitch && _origSwitch(id, btn);
+      if (id === 'profile') requestAnimationFrame(drawLineChart);
+    };
+
+    /* ── Heatmap generation ── */
+    const days  = ['월','화','수','목','금','토','일'];
+    const hours = Array.from({length:24}, (_,i) => i);
+
+    const traffic = {
+      peak: [19,20,21,22],
+      mid:  [12,13,14,17,18,23],
+      low:  [9,10,11,15,16],
+    };
+
+    function level(h, d) {
+      const isWeekend = d >= 5;
+      if (traffic.peak.includes(h)) return isWeekend ? 5 : 4;
+      if (traffic.mid.includes(h))  return isWeekend ? 3 : 2;
+      if (traffic.low.includes(h))  return 1;
+      return 0;
+    }
+
+    const hm = document.getElementById('heatmap');
+
+    /* header row */
+    hm.appendChild(Object.assign(document.createElement('div'), {className:'hm-label'}));
+    hours.forEach(h => {
+      const el = document.createElement('div');
+      el.className = 'hm-hour hm-label';
+      el.textContent = h % 6 === 0 ? h : '';
+      hm.appendChild(el);
+    });
+
+    /* data rows */
+    days.forEach((day, d) => {
+      const lbl = document.createElement('div');
+      lbl.className = 'hm-label';
+      lbl.textContent = day;
+      hm.appendChild(lbl);
+
+      hours.forEach(h => {
+        const cell = document.createElement('div');
+        cell.className = 'hm-cell';
+        cell.dataset.level = level(h, d);
+        hm.appendChild(cell);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>최근 대화</title>
+  <link rel="stylesheet" href="design-system.css" />
+  <style>
+    body { min-height: 100vh; padding-bottom: 60px; }
+
+    .page {
+      max-width: 390px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 48px 0 20px;
+    }
+
+    .btn-back {
+      background: none; border: none; cursor: pointer;
+      padding: 0; display: flex; align-items: center;
+      color: var(--foreground);
+    }
+
+    .header h1 {
+      font-size: 20px; font-weight: 700;
+      color: var(--foreground); letter-spacing: -0.02em;
+    }
+
+    /* ── Search + Sentiment row ── */
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .search-wrap {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      color: var(--muted-foreground);
+      pointer-events: none;
+      display: flex;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--foreground);
+      font-size: 13px;
+      padding: 9px 10px 9px 32px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .search-input:focus { border-color: var(--primary); }
+    .search-input::placeholder { color: var(--muted-foreground); }
+
+    .sentiment-select {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--foreground);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 9px 10px;
+      outline: none;
+      font-family: inherit;
+      cursor: pointer;
+      flex-shrink: 0;
+      appearance: none;
+      -webkit-appearance: none;
+      padding-right: 24px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 6px center;
+    }
+
+    .sentiment-select:focus { border-color: var(--primary); }
+
+    /* ── Classification chips ── */
+    .chips-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--accent);
+      color: var(--muted-foreground);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: var(--background);
+      border-color: var(--primary);
+    }
+
+    /* ── Conversation list ── */
+    .convo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .convo-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 0.25rem);
+      padding: 14px 14px 14px 16px;
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .convo-card:hover { border-color: var(--primary); }
+
+    .convo-left { flex: 1; min-width: 0; }
+
+    /* top meta row */
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .fail-icon {
+      display: flex;
+      align-items: center;
+      color: oklch(65% .22 25);
+      flex-shrink: 0;
+    }
+
+    /* Sentiment line face icons */
+    .face {
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cat-badge {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--primary);
+      background: color-mix(in oklch, var(--primary) 12%, transparent);
+      padding: 2px 7px;
+      border-radius: 9999px;
+      white-space: nowrap;
+    }
+
+    .convo-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--foreground);
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .convo-last {
+      font-size: 12px;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* right section */
+    .convo-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-shrink: 0;
+      min-width: 52px;
+    }
+
+    .convo-date {
+      font-size: 11px;
+      color: var(--muted-foreground);
+    }
+
+    .convo-count {
+      font-size: 11px;
+      color: var(--muted-foreground);
+      font-weight: 600;
+    }
+
+    .convo-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      color: var(--muted-foreground);
+      display: flex;
+      align-items: center;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+
+    .icon-btn:hover { color: var(--foreground); }
+    .icon-btn.starred { color: oklch(75% .15 60); }
+
+    /* ── Pagination ── */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .page-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--accent);
+      color: var(--muted-foreground);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .page-btn.active {
+      background: var(--primary);
+      color: var(--background);
+      border-color: var(--primary);
+    }
+
+    .page-btn:hover:not(.active) { color: var(--foreground); }
+    .page-btn:disabled { opacity: 0.3; cursor: default; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <button class="btn-back" onclick="history.back()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
+    <h1>최근 대화</h1>
+  </div>
+
+  <!-- Search + Sentiment -->
+  <div class="filter-row">
+    <div class="search-wrap">
+      <span class="search-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+      </span>
+      <input class="search-input" type="search" placeholder="질문 검색"
+        oninput="filterList()" id="searchInput" />
+    </div>
+    <select class="sentiment-select" onchange="filterList()" id="sentimentSelect">
+      <option value="">감정 전체</option>
+      <option value="positive">긍정</option>
+      <option value="negative">부정</option>
+      <option value="neutral">중립</option>
+    </select>
+  </div>
+
+  <!-- Classification chips -->
+  <div class="chips-row">
+    <button class="chip active" onclick="setChip('all', this)">전체</button>
+    <button class="chip" onclick="setChip('starred', this)">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+      중요
+    </button>
+    <button class="chip" onclick="setChip('failed', this)">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      응답실패
+    </button>
+  </div>
+
+  <!-- List -->
+  <div class="convo-list" id="convoList"></div>
+
+  <!-- Pagination -->
+  <div class="pagination" id="pagination"></div>
+
+</div>
+
+<script>
+  /* ── Data ── */
+  const allConvos = [
+    { name:'김하나',  last:'요금 정책이 어떻게 되나요?',         date:'04.19', count:3, sentiment:'negative', category:'요금/결제', failed:true,  starred:false },
+    { name:'익명',    last:'회원탈퇴 어떻게 하나요?',             date:'04.19', count:1, sentiment:'neutral',  category:'계정/회원', failed:false, starred:false },
+    { name:'이서연',  last:'자버 사용 가이드 어디서 봐요?',       date:'04.18', count:2, sentiment:'positive', category:'사용방법',  failed:false, starred:true  },
+    { name:'박지훈',  last:'카카오톡 채널 연동이 안 돼요',        date:'04.18', count:4, sentiment:'negative', category:'연동',      failed:true,  starred:false },
+    { name:'최수아',  last:'무료 플랜으로도 충분할까요?',         date:'04.17', count:2, sentiment:'positive', category:'요금/결제', failed:false, starred:true  },
+    { name:'정도윤',  last:'AI 답변을 수정할 수 있나요?',         date:'04.17', count:1, sentiment:'neutral',  category:'사용방법',  failed:false, starred:false },
+    { name:'홍길동',  last:'환불 신청은 어디서 하나요?',          date:'04.16', count:2, sentiment:'negative', category:'요금/결제', failed:true,  starred:false },
+    { name:'김민준',  last:'여러 채널 동시에 연결 가능한가요?',   date:'04.16', count:1, sentiment:'positive', category:'연동',      failed:false, starred:false },
+    { name:'이준혁',  last:'비밀번호를 잊어버렸어요',             date:'04.15', count:1, sentiment:'neutral',  category:'계정/회원', failed:false, starred:false },
+    { name:'박소영',  last:'대화 내역 내보내기 할 수 있나요?',    date:'04.14', count:2, sentiment:'positive', category:'사용방법',  failed:false, starred:true  },
+    { name:'오현우',  last:'유료 플랜 결제 방법이 궁금해요',      date:'04.14', count:1, sentiment:'positive', category:'요금/결제', failed:false, starred:false },
+    { name:'윤지아',  last:'응답이 너무 느려요',                  date:'04.13', count:3, sentiment:'negative', category:'기타',      failed:true,  starred:false },
+  ];
+
+  const faceMap = {
+    positive: { cls: 'positive', svg: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 3 4 3 4-3 4-3"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>` },
+    negative: { cls: 'negative', svg: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-3-4-3-4 3-4 3"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>` },
+    neutral:  { cls: 'neutral',  svg: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(60% .015 280)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>` },
+  };
+
+  const PER_PAGE = 5;
+  let currentPage = 1;
+  let currentChip = 'all';
+  let starred = allConvos.map(c => c.starred);
+
+  function getFiltered() {
+    const q   = document.getElementById('searchInput').value.toLowerCase();
+    const sen = document.getElementById('sentimentSelect').value;
+    return allConvos.filter((c, i) => {
+      if (q && !c.name.toLowerCase().includes(q) && !c.last.toLowerCase().includes(q)) return false;
+      if (sen && c.sentiment !== sen) return false;
+      if (currentChip === 'starred' && !starred[i]) return false;
+      if (currentChip === 'failed' && !c.failed) return false;
+      return true;
+    });
+  }
+
+  function renderList() {
+    const filtered = getFiltered();
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+    currentPage = Math.min(currentPage, totalPages);
+    const slice = filtered.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
+
+    /* sort: failed first */
+    slice.sort((a, b) => (b.failed ? 1 : 0) - (a.failed ? 1 : 0));
+
+    const listEl = document.getElementById('convoList');
+    listEl.innerHTML = slice.map((c) => {
+      const idx = allConvos.indexOf(c);
+      const face = faceMap[c.sentiment];
+      return `
+      <div class="convo-card">
+        <div class="convo-left">
+          <div class="meta-row">
+            ${c.failed ? `<span class="fail-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </span>` : ''}
+            <span class="face ${face.cls}">${face.svg}</span>
+            <span class="cat-badge">${c.category}</span>
+          </div>
+          <div class="convo-name">${c.name}</div>
+          <div class="convo-last">${c.last}</div>
+        </div>
+        <div class="convo-right">
+          <div class="convo-date">${c.date}</div>
+          <div class="convo-count">${c.count}건</div>
+          <div class="convo-actions">
+            <button class="icon-btn" title="메모" onclick="event.stopPropagation()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+            </button>
+            <button class="icon-btn ${starred[idx] ? 'starred' : ''}" title="중요"
+              onclick="event.stopPropagation(); toggleStar(${idx})">
+              <svg width="14" height="14" viewBox="0 0 24 24"
+                fill="${starred[idx] ? 'currentColor' : 'none'}"
+                stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(total) {
+    const el = document.getElementById('pagination');
+    let html = `
+      <button class="page-btn" onclick="goPage(${currentPage - 1})" ${currentPage===1?'disabled':''}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>`;
+    for (let i = 1; i <= total; i++) {
+      html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
+    }
+    html += `
+      <button class="page-btn" onclick="goPage(${currentPage + 1})" ${currentPage===total?'disabled':''}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>`;
+    el.innerHTML = html;
+  }
+
+  function goPage(p) {
+    const total = Math.ceil(getFiltered().length / PER_PAGE);
+    if (p < 1 || p > total) return;
+    currentPage = p;
+    renderList();
+  }
+
+  function setChip(type, btn) {
+    currentChip = type;
+    currentPage = 1;
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    renderList();
+  }
+
+  function filterList() {
+    currentPage = 1;
+    renderList();
+  }
+
+  function toggleStar(idx) {
+    starred[idx] = !starred[idx];
+    renderList();
+  }
+
+  renderList();
+</script>
+</body>
+</html>

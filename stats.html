@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>자버 김윤정 매니저 — 통계</title>
+  <link rel="stylesheet" href="design-system.css" />
+  <style>
+    body {
+      min-height: 100vh;
+      padding-bottom: 48px;
+    }
+
+    .page {
+      max-width: 390px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 48px 0 20px;
+      gap: 12px;
+    }
+
+    .header-left h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--foreground);
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .header-left p {
+      font-size: 14px;
+      color: var(--muted-foreground);
+    }
+
+    .btn-share {
+      flex-shrink: 0;
+      padding: 10px 18px;
+      background: var(--secondary);
+      color: var(--foreground);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* ── Filter ── */
+    .filter-row {
+      margin-bottom: 20px;
+    }
+
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: var(--secondary);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--foreground);
+      cursor: pointer;
+    }
+
+    /* ── Card base ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 0.25rem);
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+
+    .card-link {
+      font-size: 13px;
+      color: var(--muted-foreground);
+      text-decoration: none;
+    }
+
+    /* ── Stat cards ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 0.25rem);
+      padding: 18px 16px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted-foreground);
+      margin-bottom: 10px;
+    }
+
+    .stat-body {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .stat-number {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--foreground);
+      line-height: 1;
+    }
+
+    .stat-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .stat-delta {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .stat-delta.up {
+      color: #4ade80;
+    }
+
+    .stat-delta.down {
+      color: oklch(65% .22 25);
+    }
+
+    /* bar chart */
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 36px;
+    }
+
+    .bar {
+      width: 14px;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .bar.prev {
+      background: var(--muted-foreground);
+      opacity: 0.4;
+    }
+
+    .bar.curr {
+      background: var(--primary);
+    }
+
+    /* ── Unanswered questions ── */
+    .alert-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 0 0;
+    }
+
+    .alert-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 9999px;
+      background: oklch(65% .22 25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .alert-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--foreground);
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--muted-foreground);
+      margin-top: 2px;
+    }
+
+    /* ── FAQ list ── */
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .faq-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .faq-badge {
+      flex-shrink: 0;
+      background: var(--accent);
+      color: var(--muted-foreground);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 9999px;
+    }
+
+    .faq-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--foreground);
+    }
+
+    /* ── Recent conversations ── */
+    .convo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .convo-item {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .convo-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .convo-item:first-child {
+      padding-top: 0;
+    }
+
+    .convo-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 3px;
+    }
+
+    .convo-name-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .convo-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--foreground);
+    }
+
+    .convo-time {
+      font-size: 12px;
+      color: var(--muted-foreground);
+    }
+
+    .convo-preview {
+      font-size: 13px;
+      color: var(--muted-foreground);
+    }
+
+    /* ── Contact list ── */
+    .contact-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .contact-item {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .contact-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .contact-item:first-child {
+      padding-top: 0;
+    }
+
+    .contact-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 3px;
+    }
+
+    .contact-info {
+      font-size: 13px;
+      color: var(--primary);
+      margin-bottom: 2px;
+    }
+
+    .contact-note {
+      font-size: 12px;
+      color: var(--muted-foreground);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <h1>
+          <button onclick="history.back()"
+            style="background:none;border:none;cursor:pointer;padding:0;margin-right:6px;vertical-align:middle;line-height:1">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round"
+              style="color:var(--foreground);display:inline-block;vertical-align:middle">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+          <span style="vertical-align:middle">자버 김윤정 매니저</span>
+        </h1>
+        <p>아바타의 활동을 한눈에 확인하세요</p>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-row">
+      <button class="filter-chip">최근 7일 ▾</button>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">대시보드</div>
+        <a href="dashboard-detail.html" class="card-link">더보기</a>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">받은 대화</div>
+          <div class="stat-body">
+            <div class="stat-number">38</div>
+            <div class="stat-right">
+              <span class="stat-delta up">↑12</span>
+              <div class="bar-chart">
+                <div class="bar prev" style="height:60%"></div>
+                <div class="bar curr" style="height:100%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">프로필 조회수</div>
+          <div class="stat-body">
+            <div class="stat-number">38</div>
+            <div class="stat-right">
+              <span class="stat-delta down">↓12</span>
+              <div class="bar-chart">
+                <div class="bar prev" style="height:100%"></div>
+                <div class="bar curr" style="height:60%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unanswered Questions -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">답변하지 못한 질문</div>
+          <div class="card-subtitle">관련 자료를 추가하면 다음엔 답할 수 있어요</div>
+        </div>
+        <a href="unanswered.html" class="card-link" style="display:flex;align-items:center;gap:2px">
+          2건
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </a>
+      </div>
+      <div class="alert-row">
+        <div class="alert-icon">!</div>
+        <span class="alert-text">요금 정책이 어떻게 되나요?</span>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">자주 묻는 질문</div>
+        <a href="faq-list.html" class="card-link">더보기</a>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <span class="faq-badge">5건</span>
+          <span class="faq-text">자버 사용 가이드 어디서 봐요?</span>
+        </div>
+        <div class="faq-item">
+          <span class="faq-badge">5건</span>
+          <span class="faq-text">카카오톡 채널 연동 방법</span>
+        </div>
+        <div class="faq-item">
+          <span class="faq-badge">5건</span>
+          <span class="faq-text">요금제 종류가 어떻게 되나요</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Conversations -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">최근 대화</div>
+        <a href="conversations.html" class="card-link">전체 보기</a>
+      </div>
+      <div class="convo-list">
+        <div class="convo-item">
+          <div class="convo-row">
+            <div class="convo-name-wrap">
+              <span class="convo-name">익명</span>
+            </div>
+            <span class="convo-time">2시간전</span>
+          </div>
+          <div class="convo-preview">회원탈퇴 어떻게 하나요?</div>
+        </div>
+        <div class="convo-item">
+          <div class="convo-row">
+            <div class="convo-name-wrap">
+              <div class="alert-icon" style="width:16px;height:16px;font-size:9px">!</div>
+              <span class="convo-name">김하나</span>
+            </div>
+            <span class="convo-time">3시간전</span>
+          </div>
+          <div class="convo-preview">요금 정책이 어떻게 되나요?</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Submissions -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">정보를 제출한 사람</div>
+        <a href="contacts.html" class="card-link">전체 보기</a>
+      </div>
+      <div class="contact-list">
+        <div class="contact-item">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
+            <div class="contact-name">홍길동</div>
+            <span style="font-size:11px;color:var(--muted-foreground)">3시간전</span>
+          </div>
+          <div class="contact-info">010-1234-5678 · yuka@jober.io</div>
+          <div class="contact-note">자버에서 직접 연락을 주세요</div>
+        </div>
+        <div class="contact-item">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
+            <div class="contact-name">김영희</div>
+            <span style="font-size:11px;color:var(--muted-foreground)">4시간전</span>
+          </div>
+          <div class="contact-info">010-1234-5678 · yuka@jober.io</div>
+          <div class="contact-note">자버에서 직접 연락을 주세요</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+
+</html>

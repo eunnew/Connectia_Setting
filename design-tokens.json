@@ -1,0 +1,93 @@
+{
+  "cssVars": {
+    "--radius": ".625rem",
+    "--background": "oklch(10% .015 280)",
+    "--foreground": "oklch(95% .005 265)",
+    "--card": "oklch(17% .015 275)",
+    "--card-foreground": "oklch(95% .005 265)",
+    "--popover": "oklch(17% .015 275)",
+    "--popover-foreground": "oklch(95% .005 265)",
+    "--primary": "oklch(80% .1 290)",
+    "--primary-foreground": "oklch(13% .02 280)",
+    "--secondary": "oklch(20% .015 275)",
+    "--secondary-foreground": "oklch(90% .005 265)",
+    "--muted": "oklch(20% .015 275)",
+    "--muted-foreground": "oklch(60% .015 280)",
+    "--accent": "oklch(22% .02 280)",
+    "--accent-foreground": "oklch(95% .005 265)",
+    "--destructive": "oklch(65% .22 25)",
+    "--border": "oklch(100% 0 0/.08)",
+    "--input": "oklch(100% 0 0/.12)",
+    "--ring": "oklch(80% .1 290)",
+    "--chart-1": "oklch(75% .15 290)",
+    "--chart-2": "oklch(70% .12 200)",
+    "--chart-3": "oklch(65% .18 60)",
+    "--chart-4": "oklch(72% .14 330)",
+    "--chart-5": "oklch(68% .16 160)",
+    "--sidebar": "oklch(12% .015 280)",
+    "--sidebar-foreground": "oklch(95% .005 265)",
+    "--sidebar-primary": "oklch(80% .1 290)",
+    "--sidebar-primary-foreground": "oklch(13% .02 280)",
+    "--sidebar-accent": "oklch(20% .015 275)",
+    "--sidebar-accent-foreground": "oklch(95% .005 265)",
+    "--sidebar-border": "oklch(100% 0 0/.08)",
+    "--sidebar-ring": "oklch(80% .1 290)"
+  },
+  "computed": {
+    "h2": {
+      "color": "oklch(0.95 0.005 265)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "fontFamily": "Pretendard, -apple-system, \"system-ui\", sans-serif",
+      "fontSize": "18px",
+      "fontWeight": "700",
+      "lineHeight": "28px",
+      "letterSpacing": "normal"
+    },
+    "h3": {
+      "color": "oklch(0.95 0.005 265)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "fontFamily": "Pretendard, -apple-system, \"system-ui\", sans-serif",
+      "fontSize": "15px",
+      "fontWeight": "700",
+      "lineHeight": "22.5px",
+      "letterSpacing": "normal"
+    },
+    "p": {
+      "color": "oklch(0.6 0.015 280)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "fontFamily": "Pretendard, -apple-system, \"system-ui\", sans-serif",
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "lineHeight": "18px",
+      "letterSpacing": "normal"
+    },
+    "button": {
+      "color": "oklch(0.95 0.005 265)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "fontFamily": "Pretendard, -apple-system, \"system-ui\", sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "24px",
+      "letterSpacing": "normal"
+    },
+    "a": {
+      "color": "oklch(0.8 0.1 290)",
+      "backgroundColor": "rgba(0, 0, 0, 0)",
+      "fontFamily": "Pretendard, -apple-system, \"system-ui\", sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "24px",
+      "letterSpacing": "normal"
+    },
+    "body": {
+      "color": "oklch(0.95 0.005 265)",
+      "backgroundColor": "oklch(0.1 0.015 280)",
+      "fontFamily": "Pretendard, -apple-system, \"system-ui\", sans-serif",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "24px",
+      "letterSpacing": "normal"
+    }
+  },
+  "topColors": []
+}

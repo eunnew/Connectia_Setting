@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정보 제출자</title>
+  <link rel="stylesheet" href="design-system.css" />
+  <style>
+    body {
+      min-height: 100vh;
+      padding-bottom: 60px;
+    }
+
+    .page {
+      max-width: 390px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 48px 0 6px;
+    }
+
+    .btn-back {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      color: var(--foreground);
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--foreground);
+      letter-spacing: -0.02em;
+    }
+
+    .header-sub {
+      font-size: 13px;
+      color: var(--muted-foreground);
+      margin-bottom: 16px;
+      padding-left: 30px;
+    }
+
+    /* ── Filter chips ── */
+    .chips-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--accent);
+      color: var(--muted-foreground);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: var(--background);
+      border-color: var(--primary);
+    }
+
+    /* ── Section header ── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted-foreground);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      padding-left: 2px;
+    }
+
+    /* ── Contact card ── */
+    .contact-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 0.25rem);
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+      transition: border-color 0.15s;
+    }
+
+    .contact-card:hover {
+      border-color: var(--primary);
+    }
+
+    .contact-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .contact-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--foreground);
+      margin-bottom: 4px;
+    }
+
+    .contact-info {
+      font-size: 13px;
+      color: var(--primary);
+      margin-bottom: 3px;
+    }
+
+    .contact-note {
+      font-size: 12px;
+      color: var(--muted-foreground);
+    }
+
+    /* ── Right action column ── */
+    .contact-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .contact-date {
+      font-size: 11px;
+      color: var(--muted-foreground);
+    }
+
+    .btn-done {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1.5px solid var(--primary);
+      background: none;
+      color: var(--primary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .btn-done:hover {
+      background: var(--primary);
+      color: var(--background);
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      color: var(--muted-foreground);
+      display: flex;
+      align-items: center;
+      border-radius: 4px;
+      transition: color 0.15s;
+    }
+
+    .icon-btn:hover {
+      color: var(--foreground);
+    }
+
+    .icon-btn.bookmarked {
+      color: oklch(75% .15 60);
+    }
+
+    /* ── Completed section ── */
+    .section-done {
+      margin-top: 28px;
+    }
+
+    .contact-card.done {
+      opacity: 0.45;
+    }
+
+    .contact-card.done .contact-name {
+      color: var(--muted-foreground);
+      font-weight: 600;
+    }
+
+    .contact-card.done .contact-info {
+      color: var(--muted-foreground);
+    }
+
+    .btn-undo {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1.5px solid var(--border);
+      background: none;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .btn-undo:hover {
+      border-color: var(--foreground);
+      color: var(--foreground);
+    }
+
+    .empty-msg {
+      font-size: 13px;
+      color: var(--muted-foreground);
+      text-align: center;
+      padding: 24px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+
+    <div class="header">
+      <button class="btn-back" onclick="history.back()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </button>
+      <h1>정보 제출자</h1>
+    </div>
+    <p class="header-sub">연락이 필요한 사람을 확인하세요</p>
+
+    <!-- Filter chips -->
+    <div class="chips-row">
+      <button class="chip active" onclick="setChip('all', this)">전체</button>
+      <button class="chip" onclick="setChip('bookmarked', this)">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+        </svg>
+        북마크
+      </button>
+      <button class="chip" onclick="setChip('phone', this)">전화</button>
+      <button class="chip" onclick="setChip('email', this)">이메일</button>
+    </div>
+
+    <!-- 연락 필요 -->
+    <div class="section-label">연락 필요</div>
+    <div id="pendingList"></div>
+
+    <!-- 연락 완료 -->
+    <div class="section-done" id="doneSection" style="display:none">
+      <div class="section-label">연락 완료</div>
+      <div id="doneList"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const contacts = [
+      { id: 0, name: '홍길동', phone: '010-1234-5678', email: 'hong@example.com', note: '자버에서 직접 연락을 주세요', date: '3시간 전', type: 'phone', done: false, bookmarked: false },
+      { id: 1, name: '김영희', phone: '010-9876-5432', email: 'kim@example.com', note: '오전 중에 연락 부탁드려요', date: '5시간 전', type: 'email', done: false, bookmarked: false },
+      { id: 2, name: '이민수', phone: '010-1111-2222', email: 'lee@example.com', note: '제품 도입 문의', date: '어제', type: 'phone', done: false, bookmarked: true },
+      { id: 3, name: '박지은', phone: '010-3333-4444', email: 'park@example.com', note: '요금제 상담 원해요', date: '어제', type: 'email', done: false, bookmarked: false },
+      { id: 4, name: '최현우', phone: '010-5555-6666', email: 'choi@example.com', note: '데모 요청', date: '04.17', type: 'phone', done: false, bookmarked: false },
+      { id: 5, name: '정수빈', phone: '010-7777-8888', email: 'jung@example.com', note: '파트너십 문의', date: '04.16', type: 'email', done: true, bookmarked: false },
+      { id: 6, name: '강태양', phone: '010-2222-3333', email: 'kang@example.com', note: '기능 사용 문의', date: '04.15', type: 'phone', done: true, bookmarked: false },
+    ];
+
+    let currentChip = 'all';
+
+    function getVisible() {
+      return contacts.filter(c => {
+        if (currentChip === 'bookmarked') return c.bookmarked;
+        if (currentChip === 'phone') return c.type === 'phone';
+        if (currentChip === 'email') return c.type === 'email';
+        return true;
+      });
+    }
+
+    function cardHTML(c, isDone) {
+      const bookmarkFill = c.bookmarked ? 'currentColor' : 'none';
+      const bookmarkClass = c.bookmarked ? 'bookmarked' : '';
+      const actionBtn = isDone
+        ? `<button class="btn-undo" onclick="undone(${c.id})">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.4"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+          되돌리기
+        </button>`
+        : `<button class="btn-done" onclick="markDone(${c.id})">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.4"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          완료
+        </button>`;
+
+      return `
+    <div class="contact-card${isDone ? ' done' : ''}" id="card-${c.id}">
+      <div class="contact-body">
+        <div class="contact-name">${c.name}</div>
+        <div class="contact-info">${c.phone} · ${c.email}</div>
+        <div class="contact-note">${c.note}</div>
+      </div>
+      <div class="contact-actions">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="contact-date">${c.date}</span>
+          <button class="icon-btn ${bookmarkClass}" onclick="toggleBookmark(${c.id})" title="북마크">
+            <svg width="14" height="14" viewBox="0 0 24 24"
+              fill="${bookmarkFill}"
+              stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+          </button>
+        </div>
+        ${actionBtn}
+      </div>
+    </div>`;
+    }
+
+    function render() {
+      const visible = getVisible();
+      const pending = visible.filter(c => !c.done);
+      const done = visible.filter(c => c.done);
+
+      const pendingEl = document.getElementById('pendingList');
+      pendingEl.innerHTML = pending.length
+        ? pending.map(c => cardHTML(c, false)).join('')
+        : '<p class="empty-msg">연락이 필요한 사람이 없어요</p>';
+
+      const doneEl = document.getElementById('doneList');
+      const doneSection = document.getElementById('doneSection');
+      if (done.length) {
+        doneSection.style.display = '';
+        doneEl.innerHTML = done.map(c => cardHTML(c, true)).join('');
+      } else {
+        doneSection.style.display = 'none';
+      }
+    }
+
+    function markDone(id) {
+      contacts.find(c => c.id === id).done = true;
+      render();
+    }
+
+    function undone(id) {
+      contacts.find(c => c.id === id).done = false;
+      render();
+    }
+
+    function toggleBookmark(id) {
+      const c = contacts.find(c => c.id === id);
+      c.bookmarked = !c.bookmarked;
+      render();
+    }
+
+    function setChip(type, btn) {
+      currentChip = type;
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    }
+
+    render();
+  </script>
+</body>
+
+</html>

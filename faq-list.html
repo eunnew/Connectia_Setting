@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>자주 묻는 질문</title>
+  <link rel="stylesheet" href="design-system.css" />
+  <style>
+    body { min-height: 100vh; padding-bottom: 60px; }
+
+    .page {
+      max-width: 390px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 48px 0 4px;
+    }
+
+    .btn-back {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      color: var(--foreground);
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--foreground);
+      letter-spacing: -0.02em;
+    }
+
+    .period-chips {
+      display: flex;
+      gap: 8px;
+      margin: 10px 0 20px;
+    }
+
+    .period-chip {
+      padding: 6px 16px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--accent);
+      color: var(--muted-foreground);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .period-chip.active {
+      background: var(--primary);
+      color: var(--background);
+      border-color: var(--primary);
+    }
+
+    /* ── Stats graph ── */
+    .stats-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 0.25rem);
+      padding: 18px 16px;
+      margin-bottom: 12px;
+    }
+
+    .stats-card-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 14px;
+    }
+
+    .bar-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .bar-row { display: flex; align-items: center; gap: 10px; }
+
+    .bar-label {
+      font-size: 12px;
+      color: var(--foreground);
+      width: 76px;
+      flex-shrink: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bar-track {
+      flex: 1;
+      background: var(--accent);
+      border-radius: 9999px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 9999px;
+      transition: width 0.9s cubic-bezier(.16,1,.3,1);
+    }
+
+    .bar-count {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      width: 26px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ── FAQ List ── */
+    .faq-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 0.25rem);
+      overflow: hidden;
+    }
+
+    .faq-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .faq-item:last-child { border-bottom: none; }
+    .faq-item:hover { background: var(--accent); }
+
+    .faq-badge {
+      flex-shrink: 0;
+      background: var(--accent);
+      color: var(--muted-foreground);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      min-width: 36px;
+      text-align: center;
+    }
+
+    .faq-question {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--foreground);
+      line-height: 1.4;
+      min-width: 0;
+    }
+
+    .faq-category {
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--primary);
+      background: color-mix(in oklch, var(--primary) 12%, transparent);
+      padding: 3px 8px;
+      border-radius: 9999px;
+      white-space: nowrap;
+    }
+
+    /* ── Modal overlay ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 390px;
+      margin: 0 auto;
+      background: var(--surface2, #1e1e2a);
+      border-radius: 24px 24px 0 0;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(.16,1,.3,1);
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0);
+    }
+
+    .modal-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 9999px;
+      margin: 12px auto 0;
+      flex-shrink: 0;
+    }
+
+    .modal-header {
+      padding: 16px 20px 0;
+      flex-shrink: 0;
+    }
+
+    .modal-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    .modal-question {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--foreground);
+      line-height: 1.4;
+      margin-bottom: 14px;
+    }
+
+    /* ── Date range ── */
+    .date-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .date-chip {
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--accent);
+      color: var(--muted-foreground);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .date-chip.active {
+      background: var(--primary);
+      color: var(--background);
+      border-color: var(--primary);
+    }
+
+    .date-custom {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .date-input {
+      flex: 1;
+      background: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--foreground);
+      font-size: 12px;
+      padding: 7px 10px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .date-input:focus { border-color: var(--primary); }
+
+    .date-sep {
+      font-size: 12px;
+      color: var(--muted-foreground);
+    }
+
+    .date-apply {
+      padding: 7px 14px;
+      background: var(--primary);
+      color: var(--background);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .modal-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 20px;
+      flex-shrink: 0;
+    }
+
+    /* ── Chat list ── */
+    .modal-body {
+      overflow-y: auto;
+      flex: 1;
+      padding: 0 20px 24px;
+    }
+
+    .chat-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chat-item:last-child { border-bottom: none; }
+
+    .chat-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 9999px;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .chat-info { flex: 1; min-width: 0; }
+
+    .chat-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--foreground);
+      margin-bottom: 3px;
+    }
+
+    .chat-meta {
+      font-size: 12px;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-more {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      color: var(--muted-foreground);
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <div class="header">
+      <button class="btn-back" onclick="history.back()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <h1>자주 묻는 질문</h1>
+    </div>
+    <div class="period-chips">
+      <button class="period-chip active" onclick="setPeriod('weekly', this)">주간</button>
+      <button class="period-chip" onclick="setPeriod('monthly', this)">월간</button>
+    </div>
+
+    <!-- Category stats graph -->
+    <div class="stats-card">
+      <div class="stats-card-title">카테고리별 질문 횟수 (상위 5개)</div>
+      <div class="bar-list" id="barList"></div>
+    </div>
+
+    <div class="faq-card">
+      <div class="faq-item" onclick="openModal('자버 사용 가이드 어디서 봐요?')">
+        <span class="faq-badge">5건</span>
+        <span class="faq-question">자버 사용 가이드 어디서 봐요?</span>
+        <span class="faq-category">사용 방법</span>
+      </div>
+      <div class="faq-item" onclick="openModal('카카오톡 채널 연동 방법')">
+        <span class="faq-badge">5건</span>
+        <span class="faq-question">카카오톡 채널 연동 방법</span>
+        <span class="faq-category">연동</span>
+      </div>
+      <div class="faq-item" onclick="openModal('요금제 종류가 어떻게 되나요')">
+        <span class="faq-badge">5건</span>
+        <span class="faq-question">요금제 종류가 어떻게 되나요</span>
+        <span class="faq-category">요금 / 결제</span>
+      </div>
+      <div class="faq-item" onclick="openModal('AI 답변을 직접 수정할 수 있나요?')">
+        <span class="faq-badge">4건</span>
+        <span class="faq-question">AI 답변을 직접 수정할 수 있나요?</span>
+        <span class="faq-category">사용 방법</span>
+      </div>
+      <div class="faq-item" onclick="openModal('무료 플랜과 유료 플랜 차이가 뭐예요?')">
+        <span class="faq-badge">3건</span>
+        <span class="faq-question">무료 플랜과 유료 플랜 차이가 뭐예요?</span>
+        <span class="faq-category">요금 / 결제</span>
+      </div>
+      <div class="faq-item" onclick="openModal('여러 채널을 동시에 연결할 수 있나요?')">
+        <span class="faq-badge">3건</span>
+        <span class="faq-question">여러 채널을 동시에 연결할 수 있나요?</span>
+        <span class="faq-category">연동</span>
+      </div>
+      <div class="faq-item" onclick="openModal('회원 탈퇴는 어떻게 하나요?')">
+        <span class="faq-badge">2건</span>
+        <span class="faq-question">회원 탈퇴는 어떻게 하나요?</span>
+        <span class="faq-category">계정 / 회원</span>
+      </div>
+      <div class="faq-item" onclick="openModal('대화 내역을 내보내기 할 수 있나요?')">
+        <span class="faq-badge">2건</span>
+        <span class="faq-question">대화 내역을 내보내기 할 수 있나요?</span>
+        <span class="faq-category">사용 방법</span>
+      </div>
+      <div class="faq-item" onclick="openModal('비밀번호를 잊어버렸어요')">
+        <span class="faq-badge">1건</span>
+        <span class="faq-question">비밀번호를 잊어버렸어요</span>
+        <span class="faq-category">계정 / 회원</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="overlay" onclick="handleOverlayClick(event)">
+    <div class="modal" id="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <div class="modal-title">관련 채팅</div>
+        <div class="modal-question" id="modalQuestion"></div>
+
+        <!-- Date chips -->
+        <div class="date-row">
+          <button class="date-chip active" onclick="setPreset(7, this)">최근 7일</button>
+          <button class="date-chip" onclick="setPreset(14, this)">최근 14일</button>
+          <button class="date-chip" onclick="setPreset(30, this)">최근 30일</button>
+        </div>
+
+        <!-- Custom date range -->
+        <div class="date-custom">
+          <input class="date-input" type="date" id="dateFrom" />
+          <span class="date-sep">–</span>
+          <input class="date-input" type="date" id="dateTo" />
+          <button class="date-apply" onclick="applyCustomDate()">적용</button>
+        </div>
+      </div>
+
+      <div class="modal-divider"></div>
+      <div class="modal-body" id="chatList"></div>
+    </div>
+  </div>
+
+  <script>
+    /* ── Period filter ── */
+    function setPeriod(type, btn) {
+      document.querySelectorAll('.period-chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    /* ── Bar chart ── */
+    const categories = [
+      { label: '사용 방법',   count: 11, color: 'oklch(80% .1 290)' },
+      { label: '연동',        count:  8, color: 'oklch(70% .12 200)' },
+      { label: '요금 / 결제', count:  8, color: 'oklch(65% .18 60)' },
+      { label: '계정 / 회원', count:  3, color: 'oklch(72% .14 330)' },
+      { label: '기타',        count:  2, color: 'oklch(68% .16 160)' },
+    ];
+    const max = categories[0].count;
+    const barListEl = document.getElementById('barList');
+    categories.forEach(({ label, count, color }) => {
+      barListEl.innerHTML += `
+        <div class="bar-row">
+          <span class="bar-label">${label}</span>
+          <div class="bar-track">
+            <div class="bar-fill" data-pct="${(count/max*100).toFixed(1)}"
+              style="width:0%;background:${color}"></div>
+          </div>
+          <span class="bar-count">${count}건</span>
+        </div>`;
+    });
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.querySelectorAll('.bar-fill').forEach(el => {
+        el.style.width = el.dataset.pct + '%';
+      });
+    }));
+
+    /* ── Chat data per question ── */
+    const chatData = {
+      '자버 사용 가이드 어디서 봐요?': [
+        { name: '김민준', last: '자버 사용 가이드 어디서 봐요?', date: '04.19' },
+        { name: '이서연', last: '가이드 링크 좀 알려주실 수 있나요?', date: '04.18' },
+        { name: '박지훈', last: '사용법이 궁금해요', date: '04.18' },
+        { name: '최수아', last: '자버 사용 가이드 어디서 봐요?', date: '04.17' },
+        { name: '정도윤', last: '처음 사용하는데 가이드가 있나요?', date: '04.15' },
+      ],
+      '카카오톡 채널 연동 방법': [
+        { name: '홍길동', last: '카카오톡 채널 연동 방법 알려주세요', date: '04.19' },
+        { name: '김하나', last: '카카오 채널이랑 어떻게 연결하나요?', date: '04.17' },
+        { name: '이준혁', last: '카카오톡 채널 연동 방법', date: '04.16' },
+        { name: '박소영', last: '채널 연동이 안 돼요', date: '04.15' },
+        { name: '익명',   last: '카카오 비즈니스 채널도 되나요?', date: '04.14' },
+      ],
+      '요금제 종류가 어떻게 되나요': [
+        { name: '김하나',  last: '요금 정책이 어떻게 되나요?', date: '04.19' },
+        { name: '이민호',  last: '요금제 종류 좀 알려주세요', date: '04.18' },
+        { name: '박지은',  last: '요금제가 몇 가지 있어요?', date: '04.17' },
+        { name: '최현우',  last: '가격이 어떻게 되나요', date: '04.16' },
+        { name: '익명',    last: '요금제 종류가 어떻게 되나요', date: '04.13' },
+      ],
+    };
+
+    const defaultChats = [
+      { name: '익명',   last: '이 질문을 했어요', date: '04.19' },
+      { name: '사용자', last: '이 질문을 했어요', date: '04.18' },
+    ];
+
+    let activePreset = 7;
+
+    /* ── Date helpers ── */
+    function toDateStr(d) {
+      return d.toISOString().slice(0,10);
+    }
+
+    function initDates(days) {
+      const to   = new Date();
+      const from = new Date();
+      from.setDate(from.getDate() - (days - 1));
+      document.getElementById('dateFrom').value = toDateStr(from);
+      document.getElementById('dateTo').value   = toDateStr(to);
+    }
+
+    function setPreset(days, btn) {
+      activePreset = days;
+      document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      initDates(days);
+    }
+
+    function applyCustomDate() {
+      document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('active'));
+      activePreset = null;
+    }
+
+    /* ── Modal ── */
+    function openModal(question) {
+      document.getElementById('modalQuestion').textContent = question;
+      initDates(7);
+
+      const chats = chatData[question] || defaultChats;
+      const listEl = document.getElementById('chatList');
+      listEl.innerHTML = chats.map(({ name, last, date }) => `
+        <div class="chat-item">
+          <div class="chat-avatar">${name[0]}</div>
+          <div class="chat-info">
+            <div class="chat-name">${name}</div>
+            <div class="chat-meta">${last} · ${date}</div>
+          </div>
+          <div class="chat-more">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </div>
+        </div>`).join('');
+
+      document.getElementById('overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target === document.getElementById('overlay')) closeModal();
+    }
+  </script>
+</body>
+</html>
