@@ -635,6 +635,137 @@
       opacity: 0.85;
     }
 
+    /* ── Diary section ── */
+    .sub-section {
+      margin-bottom: 20px;
+    }
+
+    .sub-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .sub-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted-foreground);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .sub-section-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-text-link {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 0;
+      transition: color 0.15s;
+    }
+
+    .btn-text-link:hover { color: var(--foreground); }
+
+    .diary-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .diary-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 0.25rem);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .diary-card:hover { border-color: var(--primary); }
+
+    .diary-body { flex: 1; min-width: 0; }
+
+    .diary-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--foreground);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 5px;
+    }
+
+    .diary-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .diary-date {
+      font-size: 11px;
+      color: var(--muted-foreground);
+    }
+
+    .diary-cat {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 9999px;
+    }
+
+    .diary-cat.daily {
+      background: color-mix(in oklch, var(--primary) 12%, transparent);
+      color: var(--primary);
+    }
+
+    .diary-cat.thought {
+      background: oklch(22% .04 160 / 0.5);
+      color: oklch(70% .12 160);
+    }
+
+    .btn-record {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 13px;
+      background: none;
+      border: 1.5px dashed var(--border);
+      border-radius: calc(var(--radius) + 0.25rem);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .btn-record:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .upload-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
     /* ── Tone modal ── */
     .overlay {
       display: none;
@@ -749,36 +880,53 @@
 
     <!-- Tab: 자료 -->
     <div class="tab-panel active" id="panel-materials">
-      <p class="tab-subtitle">아바타가 학습할 자료를 업로드해요</p>
+      <p class="tab-subtitle">아바타가 학습할 자료를 관리해요</p>
 
-      <div class="section-header">
-        <div class="section-title">
-          자료 <span class="section-count" id="materialCount">4</span>
+      <!-- 일상 기록 섹션 -->
+      <div class="sub-section">
+        <div class="sub-section-header">
+          <span class="sub-section-title">일상 기록</span>
+          <div class="sub-section-actions">
+            <button class="btn-text-link" onclick="alert('전체보기')">전체보기</button>
+          </div>
         </div>
-
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="btn-add-mini" onclick="document.getElementById('fileInput').click()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-              stroke-linecap="round" stroke-linejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19" />
-              <line x1="5" y1="12" x2="19" y2="12" />
-            </svg>
-            추가
-          </button>
-
-          <button class="btn-more">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="5" r="1" />
-              <circle cx="12" cy="12" r="1" />
-              <circle cx="12" cy="19" r="1" />
-            </svg>
-          </button>
-        </div>
+        <div class="diary-list" id="diaryList"></div>
+        <button class="btn-record" onclick="alert('기록하기')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.3"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
+          </svg>
+          기록하기
+        </button>
       </div>
 
-      <input type="file" id="fileInput" style="display:none" multiple onchange="handleFileAdd(this)" />
-      <div class="material-list" id="materialList"></div>
+      <!-- 업로드 자료 섹션 -->
+      <div class="sub-section">
+        <div class="upload-section-header">
+          <div class="section-title" style="font-size:13px;font-weight:700;color:var(--muted-foreground);letter-spacing:0.05em;text-transform:uppercase;">
+            업로드 자료 <span class="section-count" id="materialCount"></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button class="btn-add-mini" onclick="document.getElementById('fileInput').click()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              추가
+            </button>
+            <button class="btn-more">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <input type="file" id="fileInput" style="display:none" multiple onchange="handleFileAdd(this)" />
+        <div class="material-list" id="materialList"></div>
+      </div>
     </div>
 
     <!-- Tab: 정체성 -->
@@ -961,6 +1109,35 @@
       document.getElementById('panel-' + tab).classList.add('active');
     }
 
+    /* ── Diary ── */
+    const diaries = [
+      { title: '오늘 고객 상담하면서 느낀 점들', date: '04.20', cat: 'daily' },
+      { title: '자버 도입 후 달라진 업무 방식에 대한 생각', date: '04.18', cat: 'thought' },
+      { title: '새로운 기능 테스트하며 기록한 메모', date: '04.16', cat: 'daily' },
+    ];
+
+    const catLabel = { daily: '일상기록', thought: '생각정리' };
+
+    function renderDiaries() {
+      const el = document.getElementById('diaryList');
+      el.innerHTML = diaries.slice(0, 2).map(d => `
+        <div class="diary-card">
+          <div class="diary-body">
+            <div class="diary-title">${d.title}</div>
+            <div class="diary-meta">
+              <span class="diary-date">${d.date}</span>
+              <span class="diary-cat ${d.cat}">${catLabel[d.cat]}</span>
+            </div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+            stroke="var(--muted-foreground)" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </div>`).join('');
+    }
+
+    renderDiaries();
     renderMaterials();
 
     /* ── Identity tab ── */
